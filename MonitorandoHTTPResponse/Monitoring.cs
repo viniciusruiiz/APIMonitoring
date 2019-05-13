@@ -1,4 +1,6 @@
 ﻿using MonitorandoHTTPResponse.ClassBody;
+using MonitorandoHTTPResponse.Data.DAO;
+using MonitorandoHTTPResponse.Data.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,6 +17,7 @@ namespace MonitorandoHTTPResponse
     {
         private static bool _isOnline;
         private static bool _isValidApi;
+        private static ReadDAO _newRead = new ReadDAO();
 
         /// <summary>
         /// Método Responsável por ler o status code da API, e validar se a API está ou não online.
@@ -71,6 +74,17 @@ namespace MonitorandoHTTPResponse
                         {
                             Console.WriteLine("Resposta da API ínvalida! :(");
                         }
+
+                        //Instanciando um novo objeto de leitura
+                        Read read = new Read
+                        {
+                            Active = _isOnline,
+                            Valid = _isValidApi,
+                            ReadMoment = DateTime.Now
+                        };
+
+                        //Inserindo a leitura no banco
+                        _newRead.Insert(read);
 
                         Thread.Sleep(3000);//Tempo de delay de monitoramento, a validar.
 

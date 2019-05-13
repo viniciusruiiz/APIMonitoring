@@ -8,6 +8,7 @@ namespace MonitorandoHTTPResponse.ClassBody
 {
     public class Correios
     {
+        #region .: Attributes
         public string Cep { get; set; }
         public string Logradouro { get; set; }
         public string Complemento { get; set; }
@@ -17,12 +18,9 @@ namespace MonitorandoHTTPResponse.ClassBody
         public string Unidade { get; set; }
         public string IBGE { get; set; }
         public string Gia { get; set; }
+        #endregion
 
-        private string ValidateResponse(string responseItem)
-        {
-            return responseItem.Equals(string.Empty) ? "Não registrado/Não existe" : responseItem;
-        }
-
+        #region .: Methods
         public override string ToString()
         {
             Cep = ValidateResponse(Cep);
@@ -48,5 +46,13 @@ namespace MonitorandoHTTPResponse.ClassBody
                 IBGE,
                 Gia);
         }
+        #endregion
+
+        #region .: Utils
+        private string ValidateResponse(string responseItem)
+        {
+            return responseItem.Equals(string.Empty) ? "Não registrado/Não existe" : responseItem;
+        }
+        #endregion
     }
 }
