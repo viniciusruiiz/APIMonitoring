@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace MonitorandoHTTPResponse.ClassBody
 {
-    public class Correios
+    public class Correios : BaseBody
     {
         #region .: Attributes
         public string Cep { get; set; }
@@ -21,6 +18,19 @@ namespace MonitorandoHTTPResponse.ClassBody
         #endregion
 
         #region .: Methods
+        /// <summary>
+        /// Método Responsável por ler o corpo da API, e validar se a resposta é o esperado
+        /// </summary>
+        public static void ValidateResponseBody(string response)
+        {
+            Console.WriteLine("validando corpo de resposta...");
+
+            Correios api = JsonConvert.DeserializeObject<Correios>(response);
+
+            //Conversar sobre deixar específico ou genérico
+            IsValid = api.Cep == "03901-010" && api.Logradouro == "Avenida dos Nacionalistas";
+        }
+
         public override string ToString()
         {
             Cep = ValidateResponse(Cep);

@@ -1,13 +1,8 @@
 ﻿using MonitorandoHTTPResponse.ClassBody;
 using MonitorandoHTTPResponse.Data.DAO;
 using MonitorandoHTTPResponse.Data.Model;
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,34 +10,12 @@ namespace MonitorandoHTTPResponse
 {
     class Monitoring
     {
-        private static bool _isOnline;
-        private static bool _isValidApi;
-        private static ReadDAO _newRead = new ReadDAO();
+        private static ReadDAO _newRead;
 
-        /// <summary>
-        /// Método Responsável por ler o status code da API, e validar se a API está ou não online.
-        /// </summary>
-        private static void ValidateStatusCode(HttpStatusCode code)
+        static async Task MonitoringCorreiosAPI()
         {
-            Console.WriteLine("validando codigo de resposta...");
-            _isOnline = code == HttpStatusCode.OK;
-        }
+            _newRead = new ReadDAO();
 
-        /// <summary>
-        /// Método Responsável por ler o corpo da API, e validar se a resposta é o esperado
-        /// </summary>
-        private static void ValidateResponse(string response)
-        {
-            Console.WriteLine("validando corpo de resposta...");
-
-            Correios api = JsonConvert.DeserializeObject<Correios>(response);
-
-            //Conversar sobre deixar específico ou genérico
-            _isValidApi = api.Cep == "03901-010" && api.Logradouro == "Avenida dos Nacionalistas";
-        }
-
-        static async Task Main()
-        {
             using (HttpClient client = new HttpClient())
             {
                 try
@@ -53,9 +26,9 @@ namespace MonitorandoHTTPResponse
                     {
                         response = await client.GetAsync("https://viacep.com.br/ws/03901010/json/");//Faz a requisição
 
-                        ValidateStatusCode(response.StatusCode);//Valida o status code retornado da requisição
+                        Correios.ValidateStatusCode(response.StatusCode);//Valida o status code retornado da requisição
 
-                        if (_isOnline)
+                        if (Correios.IsOnline)
                         {
                             Console.WriteLine("API Online!");
                         }
@@ -64,9 +37,9 @@ namespace MonitorandoHTTPResponse
                             Console.WriteLine("API Offline :(");
                         }
 
-                        ValidateResponse(await response.Content.ReadAsStringAsync());//Valida o corpo da requisição
+                        Correios.ValidateResponseBody(await response.Content.ReadAsStringAsync());//Valida o corpo da requisição
 
-                        if (_isValidApi)
+                        if (Correios.IsValid)
                         {
                             Console.WriteLine("Resposta da API validada!");
                         }
@@ -78,8 +51,8 @@ namespace MonitorandoHTTPResponse
                         //Instanciando um novo objeto de leitura
                         Read read = new Read
                         {
-                            Active = _isOnline,
-                            Valid = _isValidApi,
+                            Active = Correios.IsOnline,
+                            Valid = Correios.IsValid,
                             ReadMoment = DateTime.Now
                         };
 
@@ -98,6 +71,13 @@ namespace MonitorandoHTTPResponse
                     Console.WriteLine("Mensagem :{0} ", e.Message);
                 }
             }
+        }
+
+        static async Task Main()
+        {
+            //Console.ReadKey();
+            await MonitoringCorreiosAPI();
+            Thread.Sleep(10000000);
         }
     }
 }

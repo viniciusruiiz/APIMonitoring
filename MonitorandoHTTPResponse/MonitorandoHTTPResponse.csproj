@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassBody\BaseBody.cs" />
     <Compile Include="ClassBody\Correios.cs" />
     <Compile Include="Data\Config\SessionFactory.cs" />
     <Compile Include="Data\DAO\IDAO.cs" />
